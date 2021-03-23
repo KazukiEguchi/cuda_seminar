@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 __global__ void print_from_device(void){
-	printf('Hello World! from device\n');
+	printf("Hello World! from device\n");
 }
 
 int main(){

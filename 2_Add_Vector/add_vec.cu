@@ -12,7 +12,7 @@ void copyD2H(void* dest,void* src,std::size_t size){
   cudaMemcpy(dest,src,size,cudaMemcpyDeviceToHost);
 }
 
-__gloval__ void device_add(int *a,int *b,int *c){
+__global__ void device_add(int *a,int *b,int *c){
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
   if(idx < N){
     c[idx] = a[idx] + b[idx];

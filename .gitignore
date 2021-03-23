@@ -5,5 +5,10 @@
 *.cubin
 *.fatbin
 
-*.cu
-*.cuh
+# my
+*.dat
+*.sh.e*
+*.sh.o*
+*.pdf
+*.mp4
+*.gif

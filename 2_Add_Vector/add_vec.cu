@@ -34,7 +34,7 @@ void print_equation(int *a,int *b,int *c){
 int main(){
   int *a,*b,*c;
   int *d_a,*d_b,*d_c;
-  int size = N*sizeoff(int);
+  int size = N*sizeof(int);
 
   //allocate host memory
   a = (int*)malloc(size);
@@ -53,7 +53,7 @@ int main(){
   copyH2D(d_b,b,size);
 
   int blocks = 8;
-  int threads = (int)((N-1)/block + 1);
+  int threads = (int)((N-1)/blocks + 1);
 
   device_add<<<blocks,threads>>>(d_a,d_b,d_c);
 

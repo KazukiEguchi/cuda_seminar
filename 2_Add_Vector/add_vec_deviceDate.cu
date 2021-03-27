@@ -52,9 +52,6 @@ int main(){
   cudaMalloc(&d_b,size);
   cudaMalloc(&d_c,size);
 
-  copyH2D(d_a,a,size);
-  copyH2D(d_b,b,size);
-
   int threads = 1024;
   int blocks = (N-1)/threads + 1;
 
@@ -62,6 +59,8 @@ int main(){
   device_add<<<blocks,threads>>>(d_a,d_b,d_c);
 
   copyD2H(c,d_c,size);
+  copyD2H(a,d_a,size);
+  copyD2H(b,d_b,size);
 
   timer.stop_record();
 

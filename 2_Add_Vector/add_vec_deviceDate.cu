@@ -20,7 +20,7 @@ __global__ void device_add(int *a,int *b,int *c){
   }
 }
 
-__global__ fillarr_device(int *a,int *b){
+__global__ void fillarr_device(int *a,int *b){
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
   if(idx < N){
     a[idx] = 1;

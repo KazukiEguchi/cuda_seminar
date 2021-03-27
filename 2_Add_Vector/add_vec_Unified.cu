@@ -52,5 +52,5 @@ int main(){
   timer.print_result();
 
   //free device memory
-  cudaFree(d_a);cudaFree(d_b);cudaFree(d_c);
+  cudaFree(a);cudaFree(b);cudaFree(c);
 }

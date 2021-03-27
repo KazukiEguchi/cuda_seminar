@@ -57,7 +57,7 @@ int main(){
   copyH2D(d_b,b,size);
 
   int threads = 1024;
-  int blocks = (int)((N-1)/threads + 1;
+  int blocks = (N-1)/threads + 1;
 
   device_add<<<blocks,threads>>>(d_a,d_b,d_c);
 

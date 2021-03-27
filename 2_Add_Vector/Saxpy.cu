@@ -27,9 +27,9 @@ __global__ void fillarr_device(int *a,int x){
   }
 }
 
-void print_equation(int *a,int *b,int *c){
+void print_equation(int *a,int *b,int *c,int x){
   for(int i = 0;i < N;i++){
-    printf("%d + %d = %d\n",a[i],b[i],c[i]);
+    printf("%d * %d + %d = %d\n",x,a[i],b[i],c[i]);
   }
 }
 
@@ -64,7 +64,7 @@ int main(){
 
   timer.stop_record();
 
-  print_equation(a,b,c);
+  print_equation(a,b,c,3);
 
   timer.print_result();
 

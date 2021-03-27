@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "timer.cuh"
 
 //ベクトルの要素数
-#define N 512
+#define N 1000000
 
 void copyH2D(void* dest,void* src,std::size_t size){
   cudaMemcpy(dest,src,size,cudaMemcpyHostToDevice);
@@ -32,9 +33,12 @@ void print_equation(int *a,int *b,int *c){
 }
 
 int main(){
+  Timer timer;
   int *a,*b,*c;
   int *d_a,*d_b,*d_c;
   int size = N*sizeof(int);
+
+  timer.start_record();
 
   //allocate host memory
   a = (int*)malloc(size);
@@ -52,14 +56,18 @@ int main(){
   copyH2D(d_a,a,size);
   copyH2D(d_b,b,size);
 
-  int blocks = 8;
-  int threads = (int)((N-1)/blocks + 1);
+  int blocks = (int)((N-1)/threads + 1;
+  int threads = 1024;
 
   device_add<<<blocks,threads>>>(d_a,d_b,d_c);
 
   copyD2H(c,d_c,size);
 
+  timer.stop_record();
+
   print_equation(a,b,c);
+
+  timer.print_result();
 
   //free host memory
   free(a);free(b);free(c);

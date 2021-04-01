@@ -75,10 +75,10 @@ int main(){
   cudaMalloc(&state_y,N * sizeof(curandState));
 
   //allocate host memory
-  x = (int*)malloc(size);
-  y = (int*)malloc(size);
-  vx = (int*)malloc(size);
-  vy= (int*)malloc(size);
+  x = (double*)malloc(size);
+  y = (double*)malloc(size);
+  vx = (double*)malloc(size);
+  vy= (double*)malloc(size);
 
   //allocate device memory
   cudaMalloc(&d_x,size);
@@ -95,7 +95,7 @@ int main(){
   Init<<<blocks,threads>>>(d_x,d_y,d_vx,d_vy);
 
   for(t = 0;t <= time_max;t += dt){
-    eq_motion<<<blocks,threads>>>(d_x,d_y,d_vx,d_vydt,mass,state_x,state_y);
+    eq_motion<<<blocks,threads>>>(d_x,d_y,d_vx,d_vy,dt,mass,state_x,state_y);
     copyD2H(x,d_x,size);
     copyD2H(y,d_y,size);
     copyD2H(vx,d_vx,size);

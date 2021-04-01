@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <random>
 #include <fstream>
+#include <curand.h>
+#include <curand_kernel.h>
 
 //粒子数
 #define N 1

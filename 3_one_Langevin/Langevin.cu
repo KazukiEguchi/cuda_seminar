@@ -5,6 +5,8 @@
 #include <curand.h>
 #include <curand_kernel.h>
 
+using namespace std;
+
 //粒子数
 #define N 1
 
@@ -59,7 +61,7 @@ int main(){
   int threads = 1;
   int blocks = 1;
   //シード値
-  std::random_device seed_gen;
+  random_device seed_gen;
   int size = N*sizeof(double);
 
   //乱数の状態

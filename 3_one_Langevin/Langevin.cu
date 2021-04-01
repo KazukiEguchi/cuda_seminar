@@ -64,7 +64,7 @@ void output(double *x,double *y,double *vx,double *vy,double t,ofstream *file){
 
 int main(){
   double t;
-  double dt = 0.01,mass = 1.,time_max = 100.;
+  double dt = 0.01,mass = 1.,time_max = 10000.;
   int threads = 1;
   int blocks = 1;
   //シード値

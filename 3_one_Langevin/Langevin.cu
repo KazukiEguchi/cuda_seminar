@@ -43,15 +43,22 @@ __global__ void eq_motion(double *d_x,double *d_y,double *d_vx,double *d_vy,doub
   d_y[idx] += d_vy[idx]*dt;
 }
 
-void output(double *x,double *y,double *vx,double *vy,double t){
-  ofstream file;
+void E_15_ofstream(ofstream *file){
   char filename[256];
   sprintf(filename,"time_config_speed.dat");
-  (file).open(filename);
-  (file).setf(ios::scientific);
-  (file).precision(15);
+
+  (*file).open(filename);
+  vector<ofstream*> of_file{file};
+
+  for(int i = 0;i < 1;i++){
+    (*of_file[i]).setf(ios::scientific);
+    (*of_file[i]).precision(15);
+  }
+}
+
+void output(double *x,double *y,double *vx,double *vy,double t,ofstream *file){
   for(int k = 0;k < N;k++){
-    file << t << " "<< x[k] << " " << y[k] << " " << vx[k] << " " << vy[k] << endl;
+    *file << t << " "<< x[k] << " " << y[k] << " " << vx[k] << " " << vy[k] << endl;
   }
 }
 
@@ -94,15 +101,18 @@ int main(){
   //初期化
   Init<<<blocks,threads>>>(d_x,d_y,d_vx,d_vy);
 
+  ofstream file;
+  E_15_ofstream(&file);
   for(t = 0;t <= time_max;t += dt){
     eq_motion<<<blocks,threads>>>(d_x,d_y,d_vx,d_vy,dt,mass,state_x,state_y);
     copyD2H(x,d_x,size);
     copyD2H(y,d_y,size);
     copyD2H(vx,d_vx,size);
     copyD2H(vy,d_vy,size);
-    output(x,y,vx,vy,t);
+    output(x,y,vx,vy,t,&file);
   }
 
+  file.close();
   //free host memory
   free(x);free(y);free(vx);free(vy);
   //free device memory

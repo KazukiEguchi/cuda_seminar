@@ -47,7 +47,7 @@ void E_15_ofstream(ofstream *file){
   }
 }
 
-void output(Atoms atom,ofstream *file){
+void output(Atoms atom,ofstream *file,double t){
   copyD2H(atom.x,atom.d_x,size);
   copyD2H(atom.y,atom.d_y,size);
   copyD2H(atom.vx,atom.d_vx,size);
@@ -70,7 +70,7 @@ int main(){
   E_15_ofstream(&file);
   for(t = 0;t <= time_max;t += dt){
     eq_motion<<<blocks,threads>>>(atom,dt,mass);
-    output(atom,&file);
+    output(atom,&file,t);
   }
 
   file.close();

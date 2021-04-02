@@ -40,17 +40,17 @@ struct Atoms{
   double *x,*y,*vx,*vy;
   double *d_x,*d_y,*d_vx,*d_vy;
   //乱数の状態
-  curandState *random_fx,*random_fy;
+  //curandState *random_fx,*random_fy;
 
   Atoms(int _N){
     N = _N;
     int size = N * sizeof(double);
 
     //シード値
-    random_device seed_gen;
+    /*random_device seed_gen;
 
     int threads = 1;
-    int blocks = 1;
+    int blocks = 1;*/
 
     //allocate host memory
     x = (double*)malloc(size);
@@ -63,19 +63,19 @@ struct Atoms{
     cudaMalloc(&d_y,size);
     cudaMalloc(&d_vx,size);
     cudaMalloc(&d_vy,size);
-    cudaMalloc(&random_fx,N * sizeof(curandState));
+    /*cudaMalloc(&random_fx,N * sizeof(curandState));
     cudaMalloc(&random_fy,N * sizeof(curandState));
 
     //シードを使ってcurandStateを初期化
     setCurand<<<blocks,threads>>>(seed_gen(),random_fx);
     //シードを使ってcurandStateを初期化
-    setCurand<<<blocks,threads>>>(seed_gen(),random_fy);
+    setCurand<<<blocks,threads>>>(seed_gen(),random_fy);*/
   }
 
   //コピーコンストラクタ
   Atoms(const Atoms &_atoms){
-    int threads = 1;
-    int blocks = 1;
+    /*int threads = 1;
+    int blocks = 1;*/
 
     int size = N * sizeof(double);
 
@@ -91,8 +91,8 @@ struct Atoms{
     cudaMalloc(&d_y,size);
     cudaMalloc(&d_vx,size);
     cudaMalloc(&d_vy,size);
-    cudaMalloc(&random_fx,N * sizeof(curandState));
-    cudaMalloc(&random_fy,N * sizeof(curandState));
+    //cudaMalloc(&random_fx,N * sizeof(curandState));
+    //cudaMalloc(&random_fy,N * sizeof(curandState));
 
     copy(_atoms.x,x,N);
     copy(_atoms.y,y,N);
@@ -102,8 +102,8 @@ struct Atoms{
     copy_ker<<<blocks,threads>>>(_atoms.d_y,d_y,N);
     copy_ker<<<blocks,threads>>>(_atoms.d_vx,d_vx,N);
     copy_ker<<<blocks,threads>>>(_atoms.d_vy,d_vy,N);
-    copy_random<<<blocks,threads>>>(_atoms.random_fx,random_fx,N);
-    copy_random<<<blocks,threads>>>(_atoms.random_fy,random_fy,N);
+    //copy_random<<<blocks,threads>>>(_atoms.random_fx,random_fx,N);
+    //copy_random<<<blocks,threads>>>(_atoms.random_fy,random_fy,N);
   }
 
   ~Atoms(){

@@ -55,10 +55,10 @@ void output(Atoms &atom,ofstream *file,double t){
 __global__ void Velocity_conf_zero(Atoms &a,int N){
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
   if(idx < N){
-    a.d_x[idx] = 0.0;
-    a.d_y[idx] = 0.0;
-    a.d_vx[idx] = 0.0;
-    a.d_vy[idx] = 0.0;
+    a.d_x[idx] = 1.0;
+    a.d_y[idx] = 1.0;
+    a.d_vx[idx] = 1.0;
+    a.d_vy[idx] = 1.0;
   }
 }
 

@@ -5,15 +5,15 @@
 //ベクトルの要素数
 #define N 1000000
 
-void copy(int *x,int *y,int N){
-  for(int i = 0;i < N;i++){
+void copy(int *x,int *y,int n){
+  for(int i = 0;i < n;i++){
     y[i] = x[i];
   }
 }
 
-__global__ void copy_ker(int *x,int *y,int N){
+__global__ void copy_ker(int *x,int *y,int n){
   uint idx = threadIdx.x + blockIdx.x*blockDim.x;
-  if(idx < N){
+  if(idx < n){
     y[idx] = x[idx];
   }
 }

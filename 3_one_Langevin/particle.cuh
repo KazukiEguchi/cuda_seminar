@@ -102,7 +102,7 @@ struct Atoms{
     copy_ker<<<blocks,threads>>>(_atoms.d_y,d_y,N);
     copy_ker<<<blocks,threads>>>(_atoms.d_vx,d_vx,N);
     copy_ker<<<blocks,threads>>>(_atoms.d_vy,d_vy,N);
-    copy_randomr<<<blocks,threads>>>(_atoms.random_fx,random_fx,N);
+    copy_random<<<blocks,threads>>>(_atoms.random_fx,random_fx,N);
     copy_random<<<blocks,threads>>>(_atoms.random_fy,random_fy,N);
   }
 

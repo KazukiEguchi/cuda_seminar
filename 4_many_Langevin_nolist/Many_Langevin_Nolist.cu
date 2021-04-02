@@ -86,7 +86,7 @@ void output_conf(double *x,double *y,double *vx,double *vy,double *r,double *d_x
   copyD2H(vy,d_vy,size);
   copyD2H(r,d_r,size);
   for(int k = 0;k < N;k++){
-    *file << x[k] << " " << y[k] << " " << vx[k] << " " << vy[k] << endl;
+    *file << x[k] << " " << y[k] << " " << vx[k] << " " << vy[k] << " " << r[k] << endl;
   }
 }
 

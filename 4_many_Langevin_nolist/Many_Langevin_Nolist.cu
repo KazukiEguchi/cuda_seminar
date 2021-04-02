@@ -138,5 +138,5 @@ int main(){
   //free host memory
   free(x);free(y);free(vx);free(vy);free(r);
   //free device memory
-  cudaFree(d_x);cudaFree(d_y);cudaFree(d_vx);cudaFree(d_vy);cudaFree(d_r);(random_fx);cudaFree(random_fy);
+  cudaFree(d_x);cudaFree(d_y);cudaFree(d_vx);cudaFree(d_vy);cudaFree(d_r);cudaFree(random_fx);cudaFree(random_fy);
 }

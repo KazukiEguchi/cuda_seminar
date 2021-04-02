@@ -15,6 +15,19 @@ __global__ void setCurand(unsigned long long seed, curandState *state){
     curand_init(seed, i_global, 0, &state[i_global]);
 }
 
+void copy(double *x,double *y,int N){
+  for(int i = 0;i < N;i++){
+    y[i] = x[i];
+  }
+}
+
+__global__ void copy_ker(double *x,double *y,int N){
+  uint idx = threadIdx.x + blockIdx.x*blockDim.x;
+  if(idx < N){
+    y[idx] = x[idx];
+  }
+}
+
 struct Atoms{
   int N;
   double *x,*y,*vx,*vy;
@@ -23,7 +36,6 @@ struct Atoms{
   curandState *random_fx,*random_fy;
 
   Atoms(int _N){
-    printf("OK");
     N = _N;
     int size = N * sizeof(double);
 
@@ -53,8 +65,39 @@ struct Atoms{
     setCurand<<<blocks,threads>>>(seed_gen(),random_fy);
   }
 
+  //コピーコンストラクタ
+  Atoms(const Atoms &_atoms){
+    int threads = 1;
+    int blocks = 1;
+
+    N = _atoms.N;
+    //allocate host memory
+    x = (double*)malloc(size);
+    y = (double*)malloc(size);
+    vx = (double*)malloc(size);
+    vy= (double*)malloc(size);
+
+    //allocate device memory
+    cudaMalloc(&d_x,size);
+    cudaMalloc(&d_y,size);
+    cudaMalloc(&d_vx,size);
+    cudaMalloc(&d_vy,size);
+    cudaMalloc(&random_fx,N * sizeof(curandState));
+    cudaMalloc(&random_fy,N * sizeof(curandState));
+
+    copy(_atoms.x,x,N);
+    copy(_atoms.y,y,N);
+    copy(_atoms.vx,vx,N);
+    copy(_atoms.vy,vy,N);
+    copy_ker<<<blocks,threads>>>(_atoms.d_x,d_x,N);
+    copy_ker<<<blocks,threads>>>(_atoms.d_y,d_y,N);
+    copy_ker<<<blocks,threads>>>(_atoms.d_vx,d_vx,N);
+    copy_ker<<<blocks,threads>>>(_atoms.d_vy,d_vy,N);
+    copy_ker<<<blocks,threads>>>(_atoms.random_fx,random_fx,N);
+    copy_ker<<<blocks,threads>>>(_atoms.random_fy,random_fy,N);
+  }
+
   ~Atoms(){
-    printf("NG");
     //free host memory
     free(x);free(y);free(vx);free(vy);
     //free device memory

@@ -45,7 +45,7 @@ __global__ void eq_motion(double *d_x,double *d_y,double *d_vx,double *d_vy,doub
 
 void E_15_ofstream(ofstream *file){
   char filename[256];
-  sprintf(filename,"time_config_speed.dat");
+  sprintf(filename,"time_config_speed_af.dat");
 
   (*file).open(filename);
   vector<ofstream*> of_file{file};
@@ -101,7 +101,7 @@ void Atom_last(double *x,double *y,double *vx,double *vy,double *d_x,double *d_y
 
 int main(){
   double t;
-  double dt = 0.01,mass = 1.,time_max = 10000.;
+  double dt = 0.01,mass = 1.,time_max = 100.;
   int threads = 1;
   int blocks = 1;
   int size = N*sizeof(double);

@@ -48,6 +48,7 @@ void E_15_ofstream(ofstream *file){
 }
 
 void output(Atoms atom,ofstream *file,double t){
+  int size = N * sizeof(double);
   copyD2H(atom.x,atom.d_x,size);
   copyD2H(atom.y,atom.d_y,size);
   copyD2H(atom.vx,atom.d_vx,size);

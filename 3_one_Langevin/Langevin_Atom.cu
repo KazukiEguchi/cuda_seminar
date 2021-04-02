@@ -52,6 +52,16 @@ void output(Atoms atom,ofstream *file,double t){
   }
 }
 
+__global__ void Velocity_conf_zero(Atoms atom,int N){
+  int idx = threadIdx.x + blockIdx.x * blockDim.x;
+  if(idx < N){
+    atom.d_vx[idx] = 0.0;
+    atom.d_vy[idx] = 0.0;
+    atom.d_x[idx] = 0.0;
+    atom.d_y[idx] = 0.0;
+  }
+}
+
 int main(){
   double t;
   double dt = 0.01,mass = 1.,time_max = 100.;

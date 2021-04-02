@@ -60,7 +60,7 @@ struct Atoms{
   }
 };
 
-__global__ void Velocity_conf_zero(Atoms atom,int N){
+/*__global__ void Velocity_conf_zero(Atoms atom,int N){
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
   if(idx < N){
     atom.d_vx[idx] = 0.0;
@@ -92,4 +92,4 @@ void Initial_conf(Atoms atom,double L,int N){
   Initial_conf_kernel<<<blocks,threads>>>(atom,L,N,random_x,random_y);
 
   cudaFree(random_x);cudaFree(random_y);
-}
+}*/

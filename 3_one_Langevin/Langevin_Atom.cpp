@@ -36,7 +36,7 @@ __global__ void eq_motion(Atoms atom,double dt,double mass){
 
 void E_15_ofstream(ofstream *file){
   char filename[256];
-  sprintf(filename,"time_config_speed.dat");
+  sprintf(filename,"time_config_speed_atom.dat");
 
   (*file).open(filename);
   vector<ofstream*> of_file{file};

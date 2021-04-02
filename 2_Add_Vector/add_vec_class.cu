@@ -19,19 +19,13 @@ __global__ void copy_ker(double *x,double *y,int N){
 }
 
 struct Myvec{
-  int N;
-  double *x,*y,*z;
-  double *d_x,*d_y,*d_z;
+  int n;
+  int *x,*y,*z;
+  int *d_x,*d_y,*d_z;
 
   Myvec(int _N){
-    N = _N;
-    int size = N * sizeof(int);
-
-    //シード値
-    /*random_device seed_gen;
-
-    int threads = 1;
-    int blocks = 1;*/
+    n = _N;
+    int size = n * sizeof(int);
 
     //allocate host memory
     x = (int*)malloc(size);
@@ -48,11 +42,11 @@ struct Myvec{
   //コピーコンストラクタ
   Myvec(const Myvec &_vec){
     int threads = 1024;
-    int blocks = (N-1)/threads + 1;
+    int blocks = (n-1)/threads + 1;
 
-    int size = N * sizeof(int);
+    int size = n * sizeof(int);
 
-    N = _atoms.N;
+    n = _vec.n;
     //allocate host memory
     x = (int*)malloc(size);
     y = (int*)malloc(size);
@@ -63,12 +57,12 @@ struct Myvec{
     cudaMalloc(&d_y,size);
     cudaMalloc(&d_z,size);
 
-    copy(_vec.x,x,N);
-    copy(_vec.y,y,N);
-    copy(_vec.z,z,N);
-    copy_ker<<<blocks,threads>>>(_vec.d_x,d_x,N);
-    copy_ker<<<blocks,threads>>>(_vec.d_y,d_y,N);
-    copy_ker<<<blocks,threads>>>(_vec.d_z,d_z,N);
+    copy(_vec.x,x,n);
+    copy(_vec.y,y,n);
+    copy(_vec.z,z,n);
+    copy_ker<<<blocks,threads>>>(_vec.d_x,d_x,n);
+    copy_ker<<<blocks,threads>>>(_vec.d_y,d_y,n);
+    copy_ker<<<blocks,threads>>>(_vec.d_z,d_z,n);
 
   }
 
@@ -91,7 +85,7 @@ void copyD2H(void* dest,void* src,std::size_t size){
 __global__ void device_add(Myvec &v){
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
   if(idx < N){
-    v.d_c[idx] = v.d_a[idx] + v.d_b[idx];
+    v.d_z[idx] = v.d_x[idx] + v.d_y[idx];
   }
 }
 
@@ -122,13 +116,13 @@ int main(){
   fillarr_device<<<blocks,threads>>>(vec);
   device_add<<<blocks,threads>>>(vec);
 
-  copyD2H(vec.c,vec.d_c,size);
-  copyD2H(vec.a,vec.d_a,size);
-  copyD2H(vec.b,vec.d_b,size);
+  copyD2H(vec.z,vec.d_z,size);
+  copyD2H(vec.x,vec.d_x,size);
+  copyD2H(vec.y,vec.d_y,size);
 
   timer.stop_record();
 
-  print_equation(vec.a,vec.b,vec.c);
+  print_equation(vec.x,vec.y,vec.z);
 
   timer.print_result();
 

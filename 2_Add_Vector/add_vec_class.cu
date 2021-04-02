@@ -112,6 +112,7 @@ struct Myvec{
 int main(){
   Timer timer;
   Myvec vec(N);
+  int size = N * sizeof(int);
 
   timer.start_record();
 

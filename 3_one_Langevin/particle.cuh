@@ -3,6 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <random>
+#include <fstream>
+#include <curand.h>
+#include <curand_kernel.h>
 
 using namespace std;
 
@@ -15,6 +18,14 @@ struct Atoms{
 
   Atoms(int _N){
     N = _N;
+    int size = N * sizeof(double);
+
+    //シード値
+    random_device seed_gen;
+
+    int threads = 1;
+    int blocks = 1;
+
     //allocate host memory
     x = (double*)malloc(size);
     y = (double*)malloc(size);
@@ -28,6 +39,11 @@ struct Atoms{
     cudaMalloc(&d_vy,size);
     cudaMalloc(&random_fx,N * sizeof(curandState));
     cudaMalloc(&random_fy,N * sizeof(curandState));
+
+    //シードを使ってcurandStateを初期化
+    setCurand<<<blocks,threads>>>(seed_gen(), atom.random_fx);
+    //シードを使ってcurandStateを初期化
+    setCurand<<<blocks,threads>>>(seed_gen(), atom.random_fy);
   }
 
   ~Atoms(){
@@ -36,31 +52,38 @@ struct Atoms{
     //free device memory
     cudaFree(d_x);cudaFree(d_y);cudaFree(d_vx);cudaFree(d_vy);cudaFree(random_fx);cudaFree(random_fy);
   }
-
-  __global__ void Velocity_conf_zero(){
-    int idx = threadIdx.x + blockIdx.x * blockDim.x;
-    if(idx < N){
-      d_vx[idx] = 0.0;
-      d_vy[idx] = 0.0;
-      d_x[idx] = 0.0;
-      d_y[idx] = 0.0;
-    }
-  }
-
-  /*__global__ void Initial_conf(double L){
-    int idx = threadIdx.x + blockIdx.x * blockDim.x;
-    random_device seed;
-    curandState *random_x,*random_y;
-    cudaMalloc(&random_fx,N * sizeof(curandState));
-    cudaMalloc(&random_fy,N * sizeof(curandState));
-    setCurand<<<blocks,threads>>>(seed(), random_x);
-    setCurand<<<blocks,threads>>>(seed(), random_y);
-
-    if(idx < N){
-      d_x[idx] = L * curand_uniform_double(&random_x[idx]);
-      d_y[idx] = L * curand_uniform_double(&random_y[idx]);
-    }
-
-    cudaFree(random_x);cudaFree(random_y);
-  }*/
 };
+
+__global__ void Velocity_conf_zero(Atoms atom,int N){
+  int idx = threadIdx.x + blockIdx.x * blockDim.x;
+  if(idx < N){
+    atom.d_vx[idx] = 0.0;
+    atom.d_vy[idx] = 0.0;
+    atom.d_x[idx] = 0.0;
+    atom.d_y[idx] = 0.0;
+  }
+}
+
+void Initial_conf(Atoms atom,double L,int N){
+  int threads = 1024;
+  int blocks = (N -1+threads)/threads;
+  random_device seed;
+  curandState *random_x,*random_y;
+  cudaMalloc(&random_fx,N * sizeof(curandState));
+  cudaMalloc(&random_fy,N * sizeof(curandState));
+  setCurand<<<blocks,threads>>>(seed(), random_x);
+  setCurand<<<blocks,threads>>>(seed(), random_y);
+
+  Initial_conf_kernel<<<blocks,threads>>>(atom,L,N)
+
+  cudaFree(random_x);cudaFree(random_y);
+}
+
+__global__ void Initial_conf_kernel(Atoms atom,double L,int N){
+  int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+  if(idx < N){
+    d_x[idx] = L * curand_uniform_double(&random_x[idx]);
+    d_y[idx] = L * curand_uniform_double(&random_y[idx]);
+  }
+}

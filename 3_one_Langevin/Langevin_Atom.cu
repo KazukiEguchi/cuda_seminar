@@ -64,15 +64,8 @@ int main(){
   int threads = 1;
   int blocks = 1;
 
-  //シード値
-  random_device seed_gen;
-
   Atoms atom(N);
-  atom.Velocity_conf_zero();
-  //シードを使ってcurandStateを初期化
-  setCurand<<<blocks,threads>>>(seed_gen(), atom.random_fx);
-  //シードを使ってcurandStateを初期化
-  setCurand<<<blocks,threads>>>(seed_gen(), atom.random_fy);
+  Velocity_conf_zero<<<blocks,threads>>>(atom,N);
 
   ofstream file;
   E_15_ofstream(&file);

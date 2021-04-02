@@ -9,6 +9,12 @@
 
 using namespace std;
 
+//curandStateの初期化
+__global__ void setCurand(unsigned long long seed, curandState *state){
+    uint i_global = threadIdx.x + blockIdx.x*blockDim.x;
+    curand_init(seed, i_global, 0, &state[i_global]);
+}
+
 struct Atoms{
   int N;
   double *x,*y,*vx,*vy;
@@ -41,9 +47,9 @@ struct Atoms{
     cudaMalloc(&random_fy,N * sizeof(curandState));
 
     //シードを使ってcurandStateを初期化
-    setCurand<<<blocks,threads>>>(seed_gen(), atom.random_fx);
+    setCurand<<<blocks,threads>>>(seed_gen(),random_fx);
     //シードを使ってcurandStateを初期化
-    setCurand<<<blocks,threads>>>(seed_gen(), atom.random_fy);
+    setCurand<<<blocks,threads>>>(seed_gen(),random_fy);
   }
 
   ~Atoms(){
@@ -64,6 +70,15 @@ __global__ void Velocity_conf_zero(Atoms atom,int N){
   }
 }
 
+__global__ void Initial_conf_kernel(Atoms atom,double L,int N){
+  int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+  if(idx < N){
+    atom.d_x[idx] = L * curand_uniform_double(&atom.random_x[idx]);
+    atom.d_y[idx] = L * curand_uniform_double(&atom.random_y[idx]);
+  }
+}
+
 void Initial_conf(Atoms atom,double L,int N){
   int threads = 1024;
   int blocks = (N -1+threads)/threads;
@@ -74,16 +89,7 @@ void Initial_conf(Atoms atom,double L,int N){
   setCurand<<<blocks,threads>>>(seed(), random_x);
   setCurand<<<blocks,threads>>>(seed(), random_y);
 
-  Initial_conf_kernel<<<blocks,threads>>>(atom,L,N)
+  Initial_conf_kernel<<<blocks,threads>>>(atom,L,N);
 
   cudaFree(random_x);cudaFree(random_y);
-}
-
-__global__ void Initial_conf_kernel(Atoms atom,double L,int N){
-  int idx = threadIdx.x + blockIdx.x * blockDim.x;
-
-  if(idx < N){
-    d_x[idx] = L * curand_uniform_double(&random_x[idx]);
-    d_y[idx] = L * curand_uniform_double(&random_y[idx]);
-  }
 }

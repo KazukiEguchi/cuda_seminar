@@ -19,12 +19,6 @@ void copyD2H(void* dest,void* src,std::size_t size){
   cudaMemcpy(dest,src,size,cudaMemcpyDeviceToHost);
 }
 
-//curandStateの初期化
-__global__ void setCurand(unsigned long long seed, curandState *state){
-    uint i_global = threadIdx.x + blockIdx.x*blockDim.x;
-    curand_init(seed, i_global, 0, &state[i_global]);
-}
-
 //Ligevin eq
 __global__ void eq_motion(Atoms atom,double dt,double mass){
   uint idx = threadIdx.x + blockIdx.x*blockDim.x;

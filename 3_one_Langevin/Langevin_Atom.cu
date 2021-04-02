@@ -9,7 +9,7 @@
 using namespace std;
 
 //粒子数
-#define N 1
+const int N =1;
 
 void copyH2D(void* dest,void* src,std::size_t size){
   cudaMemcpy(dest,src,size,cudaMemcpyHostToDevice);
@@ -52,13 +52,13 @@ void output(Atoms atom,ofstream *file,double t){
   }
 }
 
-__global__ void Velocity_conf_zero(Atoms atom,int N){
+__global__ void Velocity_conf_zero(Atoms a,int N){
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
   if(idx < N){
-    atom.d_vx[idx] = 0.0;
-    atom.d_vy[idx] = 0.0;
-    atom.d_x[idx] = 0.0;
-    atom.d_y[idx] = 0.0;
+    a.d_x[idx] = 0.0;
+    a.d_y[idx] = 0.0;
+    a.d_vx[idx] = 0.0;
+    a.d_vy[idx] = 0.0;
   }
 }
 

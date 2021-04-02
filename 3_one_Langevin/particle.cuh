@@ -74,8 +74,8 @@ struct Atoms{
 
   //コピーコンストラクタ
   Atoms(const Atoms &_atoms){
-    /*int threads = 1;
-    int blocks = 1;*/
+    int threads = 1;
+    int blocks = 1;
 
     int size = N * sizeof(double);
 
@@ -110,7 +110,7 @@ struct Atoms{
     //free host memory
     free(x);free(y);free(vx);free(vy);
     //free device memory
-    cudaFree(d_x);cudaFree(d_y);cudaFree(d_vx);cudaFree(d_vy);cudaFree(random_fx);cudaFree(random_fy);
+    cudaFree(d_x);cudaFree(d_y);cudaFree(d_vx);cudaFree(d_vy);//cudaFree(random_fx);cudaFree(random_fy);
   }
 };
 

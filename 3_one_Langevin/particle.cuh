@@ -23,6 +23,7 @@ struct Atoms{
   curandState *random_fx,*random_fy;
 
   Atoms(int _N){
+    printf("OK");
     N = _N;
     int size = N * sizeof(double);
 
@@ -53,6 +54,7 @@ struct Atoms{
   }
 
   ~Atoms(){
+    printf("NG");
     //free host memory
     free(x);free(y);free(vx);free(vy);
     //free device memory

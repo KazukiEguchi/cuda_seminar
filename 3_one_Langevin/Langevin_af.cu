@@ -67,8 +67,10 @@ void output(double *x,double *y,double *vx,double *vy,double *d_x,double *d_y,do
   }
 }
 
-void Atom_first_host(double *x,double *y,double *vx,double *vy,double *d_x,double *d_y,double *d_vx,double *d_vy,curandState *state_x,curandState *state_x){
+void Atom_first(double *x,double *y,double *vx,double *vy,double *d_x,double *d_y,double *d_vx,double *d_vy,curandState *state_x,curandState *state_y){
   int size = N*sizeof(double);
+  int threads = 1;
+  int blocks = 1;
   //allocate host memory
   x = (double*)malloc(size);
   y = (double*)malloc(size);
@@ -92,7 +94,7 @@ void Atom_first_host(double *x,double *y,double *vx,double *vy,double *d_x,doubl
   setCurand<<<blocks,threads>>>(seed_gen(), state_y);
 }
 
-void Atom_last(double *x,double *y,double *vx,double *vy,double *d_x,double *d_y,double *d_vx,double *d_vy,curandState *state_x,curandState *state_x){
+void Atom_last(double *x,double *y,double *vx,double *vy,double *d_x,double *d_y,double *d_vx,double *d_vy,curandState *state_x,curandState *state_y){
   //free host memory
   free(x);free(y);free(vx);free(vy);
   //free device memory
@@ -104,7 +106,6 @@ int main(){
   double dt = 0.01,mass = 1.,time_max = 100.;
   int threads = 1;
   int blocks = 1;
-  int size = N*sizeof(double);
 
   //乱数の状態
   curandState *random_x,*random_y;
@@ -126,5 +127,5 @@ int main(){
   }
 
   file.close();
-  Atom_last(x,y,vx,vy,d_x,d_y,d_vx,d_vy,random_x,random_)
+  Atom_last(x,y,vx,vy,d_x,d_y,d_vx,d_vy,random_x,random_y);
 }

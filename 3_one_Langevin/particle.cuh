@@ -28,6 +28,13 @@ __global__ void copy_ker(double *x,double *y,int N){
   }
 }
 
+__global__ void copy_random(curandState *x,curandState *y,int N){
+  uint idx = threadIdx.x + blockIdx.x*blockDim.x;
+  if(idx < N){
+    y[idx] = x[idx];
+  }
+}
+
 struct Atoms{
   int N;
   double *x,*y,*vx,*vy;
@@ -70,6 +77,8 @@ struct Atoms{
     int threads = 1;
     int blocks = 1;
 
+    int size = N * sizeof(double);
+
     N = _atoms.N;
     //allocate host memory
     x = (double*)malloc(size);
@@ -93,8 +102,8 @@ struct Atoms{
     copy_ker<<<blocks,threads>>>(_atoms.d_y,d_y,N);
     copy_ker<<<blocks,threads>>>(_atoms.d_vx,d_vx,N);
     copy_ker<<<blocks,threads>>>(_atoms.d_vy,d_vy,N);
-    copy_ker<<<blocks,threads>>>(_atoms.random_fx,random_fx,N);
-    copy_ker<<<blocks,threads>>>(_atoms.random_fy,random_fy,N);
+    copy_randomr<<<blocks,threads>>>(_atoms.random_fx,random_fx,N);
+    copy_random<<<blocks,threads>>>(_atoms.random_fy,random_fy,N);
   }
 
   ~Atoms(){

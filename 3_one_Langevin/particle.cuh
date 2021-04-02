@@ -8,12 +8,6 @@
 
 using namespace std;
 
-//curandStateの初期化
-__global__ void setCurand(unsigned long long seed, curandState *state){
-    uint i_global = threadIdx.x + blockIdx.x*blockDim.x;
-    curand_init(seed, i_global, 0, &state[i_global]);
-}
-
 struct Atoms{
   int N;
   double *x,*y,*vx,*vy;
@@ -55,6 +49,12 @@ struct Atoms{
     free(x);free(y);free(vx);free(vy);
     //free device memory
     cudaFree(d_x);cudaFree(d_y);cudaFree(d_vx);cudaFree(d_vy);cudaFree(random_fx);cudaFree(random_fy);
+  }
+
+  //curandStateの初期化
+  __global__ void setCurand(unsigned long long seed, curandState *state){
+      uint i_global = threadIdx.x + blockIdx.x*blockDim.x;
+      curand_init(seed, i_global, 0, &state[i_global]);
   }
 
   __global__ void Velocity_conf_zero(){

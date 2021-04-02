@@ -9,8 +9,8 @@ using namespace std;
 
 //粒子数
 const int N = 1024;
-const threads = 1024;
-const blocks = (N -1+threads)/threads;
+const int threads = 1024;
+const int blocks = (N -1+threads)/threads;
 
 void copyH2D(void* dest,void* src,std::size_t size){
   cudaMemcpy(dest,src,size,cudaMemcpyHostToDevice);
@@ -94,6 +94,8 @@ int main(){
   //シード値
   random_device seed_gen;
   int size = N*sizeof(double);
+  double density = 0.8;
+  double L = sqrt(double(N)/density);
 
   //乱数の状態
   curandState *random_fx,*random_fy;

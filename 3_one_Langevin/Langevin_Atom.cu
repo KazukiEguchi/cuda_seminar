@@ -20,7 +20,7 @@ void copyD2H(void* dest,void* src,std::size_t size){
 }
 
 //Ligevin eq
-__global__ void eq_motion(Atoms atom,double dt,double mass){
+__global__ void eq_motion(Atoms &atom,double dt,double mass){
   uint idx = threadIdx.x + blockIdx.x*blockDim.x;
   atom.d_vx[idx] += -atom.d_vx[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&atom.random_fx[idx])/mass;
   atom.d_vy[idx] += -atom.d_vy[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&atom.random_fy[idx])/mass;
@@ -41,7 +41,7 @@ void E_15_ofstream(ofstream *file){
   }
 }
 
-void output(Atoms atom,ofstream *file,double t){
+void output(Atoms &atom,ofstream *file,double t){
   int size = N * sizeof(double);
   copyD2H(atom.x,atom.d_x,size);
   copyD2H(atom.y,atom.d_y,size);
@@ -52,7 +52,7 @@ void output(Atoms atom,ofstream *file,double t){
   }
 }
 
-__global__ void Velocity_conf_zero(Atoms a,int N){
+__global__ void Velocity_conf_zero(Atoms &a,int N){
   int idx = threadIdx.x + blockIdx.x * blockDim.x;
   if(idx < N){
     a.d_x[idx] = 0.0;

@@ -5,35 +5,6 @@
 //ベクトルの要素数
 #define N 1000000
 
-void copyH2D(void* dest,void* src,std::size_t size){
-  cudaMemcpy(dest,src,size,cudaMemcpyHostToDevice);
-}
-
-void copyD2H(void* dest,void* src,std::size_t size){
-  cudaMemcpy(dest,src,size,cudaMemcpyDeviceToHost);
-}
-
-__global__ void device_add(Myvec &v){
-  int idx = threadIdx.x + blockIdx.x * blockDim.x;
-  if(idx < N){
-    v.d_c[idx] = v.d_a[idx] + v.d_b[idx];
-  }
-}
-
-__global__ void fillarr_device(Myvec &v){
-  int idx = threadIdx.x + blockIdx.x * blockDim.x;
-  if(idx < N){
-    v.d_x[idx] = 1;
-    v.d_y[idx] = 2;
-  }
-}
-
-void print_equation(int *a,int *b,int *c){
-  for(int i = 0;i < N;i++){
-    printf("%d + %d = %d\n",a[i],b[i],c[i]);
-  }
-}
-
 void copy(double *x,double *y,int N){
   for(int i = 0;i < N;i++){
     y[i] = x[i];
@@ -108,6 +79,35 @@ struct Myvec{
     cudaFree(d_x);cudaFree(d_y);cudaFree(d_z);
   }
 };
+
+void copyH2D(void* dest,void* src,std::size_t size){
+  cudaMemcpy(dest,src,size,cudaMemcpyHostToDevice);
+}
+
+void copyD2H(void* dest,void* src,std::size_t size){
+  cudaMemcpy(dest,src,size,cudaMemcpyDeviceToHost);
+}
+
+__global__ void device_add(Myvec &v){
+  int idx = threadIdx.x + blockIdx.x * blockDim.x;
+  if(idx < N){
+    v.d_c[idx] = v.d_a[idx] + v.d_b[idx];
+  }
+}
+
+__global__ void fillarr_device(Myvec &v){
+  int idx = threadIdx.x + blockIdx.x * blockDim.x;
+  if(idx < N){
+    v.d_x[idx] = 1;
+    v.d_y[idx] = 2;
+  }
+}
+
+void print_equation(int *a,int *b,int *c){
+  for(int i = 0;i < N;i++){
+    printf("%d + %d = %d\n",a[i],b[i],c[i]);
+  }
+}
 
 int main(){
   Timer timer;

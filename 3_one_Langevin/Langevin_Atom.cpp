@@ -48,10 +48,10 @@ void E_15_ofstream(ofstream *file){
 }
 
 void output(Atoms atom,ofstream *file){
-  copyD2H(x,d_x,size);
-  copyD2H(y,d_y,size);
-  copyD2H(vx,d_vx,size);
-  copyD2H(vy,d_vy,size);
+  copyD2H(atom.x,atom.d_x,size);
+  copyD2H(atom.y,atom.d_y,size);
+  copyD2H(atom.vx,atom.d_vx,size);
+  copyD2H(atom.vy,atom.d_vy,size);
   for(int k = 0;k < N;k++){
     *file << t << " "<< atom.x[k] << " " << atom.y[k] << " " << atom.vx[k] << " " << atom.vy[k] << endl;
   }

@@ -83,4 +83,4 @@ struct Atoms{
 
     cudaFree(random_x);cudaFree(random_y);
   }
-}
+};

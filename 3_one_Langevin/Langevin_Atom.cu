@@ -32,14 +32,14 @@ void updateVel(Atoms &at,double dt,double mass){
   updateVel_device<<<NB,NT>>>(at.d_vx,at.d_vy,at.random_fx,at.random_fy,dt,mass);
 }
 
-__global__ void updatePos_device(double *d_x,double *d_y,double dt){
+__global__ void updatePos_device(double *d_x,double *d_y,double *d_vx,double *d_vy,double dt){
   uint idx = threadIdx.x + blockIdx.x*blockDim.x;
   d_x[idx] += d_vx[idx]*dt;
   d_y[idx] += d_vy[idx]*dt;
 }
 
 void updatePos(Atoms &at,double dt){
-  updatePos_device<<<NB,NT>>>(at.d_x,at.d_y,dt);
+  updatePos_device<<<NB,NT>>>(at.d_x,at.d_y,at.d_vx,at.d_vy,dt);
 }
 
 void E_15_ofstream(ofstream *file){

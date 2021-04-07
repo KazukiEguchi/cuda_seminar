@@ -24,8 +24,8 @@ void copyD2H(void* dest,void* src,std::size_t size){
 //Ligevin eq
 __global__ void updateVel_device(double *d_vx,double *d_vy,curandState *fx,curandState *fy,double dt,double mass){
   uint idx = threadIdx.x + blockIdx.x*blockDim.x;
-  d_vx[idx] += d_vx[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&fx[idx])/mass;
-  d_vy[idx] += d_vy[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&fy[idx])/mass;
+  d_vx[idx] += -d_vx[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&fx[idx])/mass;
+  d_vy[idx] += -d_vy[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&fy[idx])/mass;
 }
 
 void updateVel(Atoms &at,double dt,double mass){

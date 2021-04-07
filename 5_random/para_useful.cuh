@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <random>
@@ -32,5 +33,5 @@ __global__ void setCurand(unsigned long long seed, curandState *state){
 
 //乱数の設定
 void cuda_random_set(curandState *state){
-  setCurand<<<blocks,threads>>>(seed(), random_x);
+  setCurand<<<blocks,threads>>>(seed(), state);
 }

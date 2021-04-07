@@ -10,6 +10,8 @@ using namespace std;
 
 //粒子数
 const int N =1;
+const int NT = 1;
+const int NB = 1;
 
 void copyH2D(void* dest,void* src,std::size_t size){
   cudaMemcpy(dest,src,size,cudaMemcpyHostToDevice);
@@ -20,20 +22,24 @@ void copyD2H(void* dest,void* src,std::size_t size){
 }
 
 //Ligevin eq
-/*__global__ void eq_motion(Atoms &atom,double dt,double mass){
+__global__ void updateVel_device(double *d_vx,double *d_vy,curandState *fx,curandState *fy,double dt,double mass){
   uint idx = threadIdx.x + blockIdx.x*blockDim.x;
-  atom.d_vx[idx] += -atom.d_vx[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&atom.random_fx[idx])/mass;
-  atom.d_vy[idx] += -atom.d_vy[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&atom.random_fy[idx])/mass;
-  atom.d_x[idx] += atom.d_vx[idx]*dt;
-  atom.d_y[idx] += atom.d_vy[idx]*dt;
-}*/
+  d_vx[idx] += d_vx[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&fx[idx])/mass;
+  d_vy[idx] += d_vy[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&fy[idx])/mass;
+}
 
-__global__ void eq_motion(Atoms &atom,double dt,double mass,curandState *state_x,curandState *state_y){
+void updateVel(Atoms &at,double dt,double mass){
+  updateVel_device<<<NB,NT>>>(at.d_vx,at.d_vy,at.random_fx,at.random_fy,dt,mass);
+}
+
+__global__ void updatePos_device(double *d_x,double *d_y,double dt){
   uint idx = threadIdx.x + blockIdx.x*blockDim.x;
-  atom.d_vx[idx] += -atom.d_vx[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&state_x[idx])/mass;
-  atom.d_vy[idx] += -atom.d_vy[idx] * dt /mass + sqrt(2. *dt)* curand_normal_double(&state_y[idx])/mass;
-  atom.d_x[idx] += atom.d_vx[idx]*dt;
-  atom.d_y[idx] += atom.d_vy[idx]*dt;
+  d_x[idx] += atom.d_vx[idx]*dt;
+  d_y[idx] += atom.d_vy[idx]*dt;
+}
+
+void updatePos(Atoms &at,double dt){
+  updatePos_device<<<NB,NT>>>(at.d_x,at.d_y,dt);
 }
 
 void E_15_ofstream(ofstream *file){
@@ -60,41 +66,18 @@ void output(Atoms &atom,ofstream *file,double t){
   }
 }
 
-__global__ void Velocity_conf_zero(Atoms &a,int N){
-  int idx = threadIdx.x + blockIdx.x * blockDim.x;
-  if(idx < N){
-    a.d_x[idx] = 0.0;
-    a.d_y[idx] = 0.0;
-    a.d_vx[idx] = 0.0;
-    a.d_vy[idx] = 0.0;
-  }
-}
-
 int main(){
   double t;
   double dt = 0.01,mass = 1.,time_max = 100.;
-  int threads = 1;
-  int blocks = 1;
-  //シード値
-  random_device seed_gen;
-
-  //乱数の状態
-  curandState *state_x,*state_y;
-  cudaMalloc(&state_x,N * sizeof(curandState));
-  cudaMalloc(&state_y,N * sizeof(curandState));
-
-  //シードを使ってcurandStateを初期化
-  setCurand<<<blocks,threads>>>(seed_gen(), state_x);
-  //シードを使ってcurandStateを初期化
-  setCurand<<<blocks,threads>>>(seed_gen(), state_y);
 
   Atoms atom(N);
-  Velocity_conf_zero<<<blocks,threads>>>(atom,N);
+  Velocity_conf_zero(atom,N);
 
   ofstream file;
   E_15_ofstream(&file);
   for(t = 0;t <= time_max;t += dt){
-    eq_motion<<<blocks,threads>>>(atom,dt,mass,state_x,state_y);
+    updateVel(atom,dt,mass);
+    updatePos(atom,dt);
     output(atom,&file,t);
   }
 

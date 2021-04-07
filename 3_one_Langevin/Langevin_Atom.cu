@@ -34,8 +34,8 @@ void updateVel(Atoms &at,double dt,double mass){
 
 __global__ void updatePos_device(double *d_x,double *d_y,double dt){
   uint idx = threadIdx.x + blockIdx.x*blockDim.x;
-  d_x[idx] += atom.d_vx[idx]*dt;
-  d_y[idx] += atom.d_vy[idx]*dt;
+  d_x[idx] += d_vx[idx]*dt;
+  d_y[idx] += d_vy[idx]*dt;
 }
 
 void updatePos(Atoms &at,double dt){

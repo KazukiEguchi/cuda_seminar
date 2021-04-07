@@ -68,7 +68,7 @@ void output(Atoms &atom,ofstream *file,double t){
 
 int main(){
   double t;
-  double dt = 0.01,mass = 1.,time_max = 100.;
+  double dt = 0.01,mass = 1.,time_max = 1000.;
 
   Atoms atom(N);
   Velocity_conf_zero(atom,N);

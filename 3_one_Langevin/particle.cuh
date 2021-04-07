@@ -46,7 +46,7 @@ struct Atoms{
     N = _N;
     int size = N * sizeof(double);
 
-    シード値
+    //シード値
     random_device seed_gen;
 
     int threads = 1;
@@ -124,7 +124,7 @@ __global__ void Velocity_conf_zero_kernel(double *d_vx,double *d_vy,double *d_x,
   }
 }
 
-void Velocity_conf_zero(Atom &atom,int N){
+void Velocity_conf_zero(Atoms &atom,int N){
   int threads = 1024;
   int blocks = (N -1+threads)/threads;
 

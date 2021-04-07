@@ -40,7 +40,7 @@ struct Atoms{
   double *x,*y,*vx,*vy;
   double *d_x,*d_y,*d_vx,*d_vy;
   //乱数の状態
-  //curandState *random_fx,*random_fy;
+  curandState *random_fx,*random_fy;
 
   Atoms(int _N){
     N = _N;
@@ -91,8 +91,8 @@ struct Atoms{
     cudaMalloc(&d_y,size);
     cudaMalloc(&d_vx,size);
     cudaMalloc(&d_vy,size);
-    //cudaMalloc(&random_fx,N * sizeof(curandState));
-    //cudaMalloc(&random_fy,N * sizeof(curandState));
+    cudaMalloc(&random_fx,N * sizeof(curandState));
+    cudaMalloc(&random_fy,N * sizeof(curandState));
 
     copy(_atoms.x,x,N);
     copy(_atoms.y,y,N);
@@ -110,7 +110,7 @@ struct Atoms{
     //free host memory
     free(x);free(y);free(vx);free(vy);
     //free device memory
-    cudaFree(d_x);cudaFree(d_y);cudaFree(d_vx);cudaFree(d_vy);//cudaFree(random_fx);cudaFree(random_fy);
+    cudaFree(d_x);cudaFree(d_y);cudaFree(d_vx);cudaFree(d_vy);cudaFree(random_fx);cudaFree(random_fy);
   }
 };
 
